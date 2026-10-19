@@ -1199,6 +1199,55 @@ html[data-windows-titlebar].dsu-lock body {
   opacity: 1;
   transform: translateX(0);
 }
+/* 竖屏 / 窄屏适配（2026-10-19）：
+   立绘原本固定 250px 宽，在 390px 手机上占掉 64% 宽度，
+   又压在「授予访问权限」按钮区和底部状态行上，导致按钮点不到、文字被挡。
+   窄屏下缩小立绘并压低层级体积，保证操作区始终可读可点。 */
+@media (max-width: 600px), (max-height: 560px) {
+  #dsh-startup-root .dsu-mascot {
+    width: min(150px, 38vw);
+    bottom: 64px;
+    opacity: 0.9;
+  }
+}
+@media (max-width: 420px) {
+  #dsh-startup-root .dsu-mascot {
+    width: min(120px, 32vw);
+    bottom: 56px;
+  }
+}
+/* 窄屏底部排版（2026-10-19）：
+   左下阶段计数、底部居中字幕、右下页脚三者在窄屏会挤成一团，
+   这里统一缩小字号、收窄左右留白，并把页脚下移错开。
+   主状态标题（.dsu-status 40px）在窄屏也会溢出，一并缩小。 */
+@media (max-width: 600px) {
+  #dsh-startup-root .dsu-status,
+  #dsh-startup-root .dsu-status.dsu-zhline {
+    font-size: 24px;
+    letter-spacing: 0.14em;
+  }
+  #dsh-startup-root .dsu-stepcount {
+    left: 20px;
+    bottom: 34px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+  #dsh-startup-root .dsu-subtitle {
+    bottom: 52px;
+    gap: 4px;
+    padding: 0 20px;
+  }
+  #dsh-startup-root .dsu-sub-zh { font-size: 12px; }
+  #dsh-startup-root .dsu-sub-en2 { font-size: 9px; letter-spacing: 0.2em; }
+  #dsh-startup-root .dsu-foot {
+    right: 20px;
+    bottom: 16px;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+  }
+  #dsh-startup-root .dsu-foot.dsu-in i { width: 16px; }
+  #dsh-startup-root .dsu-skip { right: 20px; top: 28px; font-size: 9px; }
+}
 #dsh-startup-root .dsu-mascot-img {
   display: block;
   width: 100%;
