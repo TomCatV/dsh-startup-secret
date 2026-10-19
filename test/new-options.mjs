@@ -263,6 +263,14 @@ console.log('\n[4] 降世事件窗口：默认关闭 + 首次启动弹一次')
 
   const gateSrc = fs.readFileSync(BUNDLE, 'utf8')
   check('事件闸门同时认 eventWindow 与 eventOnce', /if \(!C\.eventWindow && !C\.eventOnce\) return Promise\.resolve\(\)/.test(gateSrc))
+  /* 2026-10-19 回归：事件窗口必须骑在首屏黑幕层之上，否则整屏全黑（用户报的"黑屏"）。
+     两道保险：闸门里先撤黑幕层；CSS 里事件层 z-index 高于黑幕层。 */
+  check('打开事件窗口前先撤掉首屏黑幕层',
+    /function eventGate\(\)[\s\S]{0,900}?removeChild\(veilEl\)/.test(gateSrc))
+  const cssSrc = fs.readFileSync(new URL('../lib/splash.css', import.meta.url), 'utf8')
+  const zEvent = /\.dsu-event \{[\s\S]*?z-index: (\d+);\s*\n\s*position: fixed/.exec(cssSrc)
+  const zEventNum = zEvent ? Number(zEvent[1]) : 0
+  check('事件层 z-index 高于黑幕层 2147482999 与挂载点 2147483000', zEventNum > 2147483000, zEventNum)
 }
 
 /* ═══ 5. 人物立绘「空」 ══════════════════════════════════════════════════ */

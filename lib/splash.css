@@ -1222,7 +1222,8 @@ html[data-windows-titlebar].dsu-lock body {
 .dsu-event { z-index: 2147483100;
   position: fixed;
   inset: 0;
-  z-index: 40;
+  /* 必须高于首屏黑幕层(2147482999)与挂载点(2147483000)，否则降世窗口会被黑幕盖住 */
+  z-index: 2147483200;
   display: flex;
   align-items: center;
   justify-content: center;
