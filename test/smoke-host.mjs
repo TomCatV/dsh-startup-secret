@@ -225,6 +225,14 @@ check('关键样式排在 <link> 样式表之前（不被外链拖慢）', after
 check('关键样式给 html 铺了黑底', /html\.dsu-lock\{background:#000!important/.test(after))
 check('黑幕层由 dsu-lock 驱动显隐', /html\.dsu-lock #dsh-startup-veil\{display:block\}/.test(after))
 check('bootstrap 先上锁再判断（异常也不会白闪）', /try\{\s*var d=document\.documentElement;[\s\S]{0,400}?d\.classList\.add\('dsu-lock'\);/.test(inlineBootstrap(after)))
+/* 2026-10-19：桌面端窗口按钮「先不透明再变透明」的根因 ——
+   Electron preload 的配色探针可能在我们写入 data-windows-titlebar 之前就读过一次，
+   若规则只认那个属性，就会先读到宿主的 #1b1b1c。所以必须有一条只认 dsu-lock 的规则。 */
+check('窗口按钮透明规则不依赖 data-windows-titlebar',
+  /html\.dsu-lock body\{--dsw-specific-sidebar-fill:transparent!important/.test(after))
+const lockAt = after.indexOf("classList.add('dsu-lock')")
+check('上锁脚本在 <head> 且早于 splash.css（抢占首帧）',
+  lockAt > -1 && lockAt < after.indexOf('/dsh-startup/splash.css'))
 check('幂等：二次调用不重复注入', TAPS[0](after) === after)
 check('原 <div id="root"></div> 仍在（应用照常挂载）', after.includes('<div id="root"></div>'))
 check('内联载荷里没有裸的 < （防 </script> 提前闭合）', !inlinePayload(after).includes('<'))

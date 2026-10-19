@@ -13,6 +13,9 @@
 
 /* Desktop 的原生标题栏探针在 body 下；启动期间让按钮底色透明，透出背景图。
    同时覆盖客户端自举和重播，解除 dsu-lock 后恢复宿主主题 token。 */
+/* 启动期间把窗口按钮底色置透明。不依赖 data-windows-titlebar：
+   探针可能在属性写入前就读过一次，那时规则不匹配，按钮会先画成不透明。 */
+html.dsu-lock body,
 html[data-windows-titlebar].dsu-lock body {
   --dsw-specific-sidebar-fill: transparent !important;
   --dsw-alias-label-primary: #fff !important;
