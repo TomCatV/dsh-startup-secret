@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8">
@@ -154,7 +154,7 @@
   window.__DSH_STARTUP_SCRIPT_URL__ = '../lib/splash.js';
   window.__DSH_STARTUP__ = {
     enabled: true,
-    mode: 'always',
+    mode: 'session',
     theme: 'light',
     speed: 1,
     requireInteraction: true,
@@ -296,9 +296,8 @@
             <label class="__ss_check"><input type="checkbox" checked id="sEnabled"><span class="__ss_checkText"><span>启用启动动画</span><span class="__ss_hint">关闭后直接进主界面，不再显示启动界面。</span></span></label>
             <div class="__ss_field"><label class="__ss_label">播放时机</label>
               <select class="__ss_select" id="sMode">
-                <option value="session" selected>每个浏览器会话一次</option>
+                <option value="session" selected>每次打开都播放</option>
                 <option value="daily">每天一次</option>
-                <option value="always">每次打开都播放</option>
               </select>
             </div>
             <div class="__ss_field"><label class="__ss_label">速度倍率</label>

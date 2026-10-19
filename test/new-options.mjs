@@ -128,7 +128,7 @@ function run(opts) {
   const timers = []
   const windowStub = {
     __DSH_STARTUP__: Object.assign({
-      enabled: true, mode: 'always', theme: 'light', speed: 1,
+      enabled: true, mode: 'session', theme: 'light', speed: 1,
       /* 与 Host DEFAULTS 一致：1.3.1 时代 requireInteraction 出厂为 true */
       requireInteraction: true,
       identity: 'JOYCE MOORE', identityId: '0087', accessLevel: '3',

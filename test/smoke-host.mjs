@@ -174,6 +174,12 @@ check('speed 低于下限被夹到 0.35', cfg.config.speed === 0.35, String(cfg.
 check('非法 theme 回落到 dark', cfg.config.theme === 'dark', cfg.config.theme)
 check('非法颜色回落到默认红', cfg.config.accent === '#c70000', cfg.config.accent)
 
+/* 播放时机：原 always 选项已删除，旧配置里的 always 自动迁移到 session */
+r = await call('exact /dsh-startup/config', 'POST', JSON.stringify({ patch: { mode: 'always' } }))
+check('旧 mode=always 自动迁移到 session', JSON.parse(r.body).config.mode === 'session', JSON.parse(r.body).config.mode)
+r = await call('exact /dsh-startup/config', 'POST', JSON.stringify({ patch: { mode: 'daily' } }))
+check('mode=daily 原样保留', JSON.parse(r.body).config.mode === 'daily', JSON.parse(r.body).config.mode)
+
 r = await call('exact /dsh-startup/config', 'POST', JSON.stringify({ action: 'reset' }))
 check('reset 恢复默认', JSON.parse(r.body).config.identity === 'Pavel Korchagin')
 

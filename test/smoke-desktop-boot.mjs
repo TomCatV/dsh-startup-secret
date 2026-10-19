@@ -274,12 +274,6 @@ console.log('\n[3] 不播的几种情况')
   check('daily 模式今天已播过 → 不重播', rootOf(s) === null)
 }
 {
-  const s = boot({ config: { enabled: true, mode: 'always' }, session: { 'dsh-startup-screen:shown': '1' } }); s.apply()
-  await settle()
-  check('always 模式无视已播标记 → 照播', !!rootOf(s))
-  check('always 模式不写 session 标记', s.win.sessionStorage.getItem('dsh-startup-screen:shown') === '1', '（应保持原值 1）')
-}
-{
   const s = boot({ config: { enabled: true, mode: 'daily' } }); s.apply()
   await settle()
   const today = new Date().toISOString().slice(0, 10)
@@ -333,14 +327,14 @@ console.log('\n[4] 自举失败 → 把页面还回去')
 
 console.log('\n[4b] Desktop 自举后的预览读取最新保存配置')
 {
-  const options = { config: { enabled: true, mode: 'always', identity: 'OLD' } }
+  const options = { config: { enabled: true, mode: 'session', identity: 'OLD' } }
   const s = boot(options); s.apply()
   await settle()
   // 只加载跳过态 API，避免把 DOM stub 当作动画渲染器。
   s.win.__DSH_STARTUP_SKIP__ = true
   const runtime = fs.readFileSync(new URL('../lib/splash.js', import.meta.url), 'utf8')
   vm.runInContext(runtime, s.sandbox, { filename: 'splash.js' })
-  options.config = { enabled: true, mode: 'always', identity: 'SAVED', mascot: -1 }
+  options.config = { enabled: true, mode: 'session', identity: 'SAVED', mascot: -1 }
   const before = s.requested.length
   await s.win.__DSH_STARTUP_API__.replay()
   check('重播前重新请求配置接口', s.requested.length === before + 1 &&

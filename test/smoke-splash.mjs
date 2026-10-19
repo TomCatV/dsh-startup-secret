@@ -147,7 +147,7 @@ function run(withSpeech, cfgOverride) {
   const timers = []
   const windowStub = {
     __DSH_STARTUP__: {
-      enabled: true, mode: 'always', theme: 'light', speed: 1,
+      enabled: true, mode: 'session', theme: 'light', speed: 1,
       requireInteraction: true, allowSkip: true,
       identity: 'JOYCE MOORE', identityId: '0087', accessLevel: '3',
       /* 只覆盖测试要变的；语速/音调/留白故意留空，好让断言直接校验 splash.js 出厂默认值 */

@@ -151,7 +151,7 @@ async function main() {
 
   const windowStub = {
     __DSH_STARTUP__: {
-      enabled: true, mode: 'always', theme: 'light', speed: 1,
+      enabled: true, mode: 'session', theme: 'light', speed: 1,
       requireInteraction: true, allowSkip: true,
       identity: 'JOYCE MOORE', identityId: '0087', accessLevel: '3',
       identityPassword: 'secret-123',
