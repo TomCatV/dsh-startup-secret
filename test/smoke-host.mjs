@@ -195,6 +195,14 @@ function inlinePayload(html) {
   return a === -1 || b === -1 ? '' : html.slice(a + 'window.__DSH_STARTUP__='.length, b)
 }
 
+/** 抠出内联的 BOOTSTRAP 脚本（window.__DSH_STARTUP__= ... ; 之后的那段） */
+function inlineBootstrap(html) {
+  const a = html.indexOf(';(function(){try{')
+  if (a === -1) return ''
+  const b = html.indexOf('</script>', a)
+  return b === -1 ? '' : html.slice(a, b)
+}
+
 console.log('\n[6] index.html 注入（源: ' + REAL_INDEX.path + '）')
 const before = REAL_INDEX.html
 const after = TAPS[0](before)
@@ -209,7 +217,14 @@ check('注入了 window.__DSH_STARTUP_VERSION__', after.includes('window.__DSH_S
 check('注入的版本号 = package.json 的 version', after.includes('window.__DSH_STARTUP_VERSION__=' + JSON.stringify(pkgVersion)), pkgVersion)
 check('注入了 defer 运行时脚本', after.includes('<script defer src="/dsh-startup/splash.js"></script>'))
 check('配置落在 </head> 之前', after.indexOf('dsh-startup-critical') < after.indexOf('</head>'))
-check('挂载点紧跟 <body>', /<body>\s*<div id="dsh-startup-root"/.test(after))
+/* 2026-10-19 防闪屏：<body> 的第一个子元素应是纯 CSS 黑幕层（不依赖脚本/样式表），
+   紧随其后才是挂载点。这样即使脚本还没执行，页面上也已经是一块黑幕而不是白底工作台。 */
+check('body 首个子元素是首屏黑幕层', /<body>\s*<div id="dsh-startup-veil"/.test(after))
+check('挂载点紧跟黑幕层', /<div id="dsh-startup-veil"[^>]*><\/div>\s*<div id="dsh-startup-root"/.test(after))
+check('关键样式排在 <link> 样式表之前（不被外链拖慢）', after.indexOf('dsh-startup-critical') < after.indexOf('/dsh-startup/splash.css'))
+check('关键样式给 html 铺了黑底', /html\.dsu-lock\{background:#000!important/.test(after))
+check('黑幕层由 dsu-lock 驱动显隐', /html\.dsu-lock #dsh-startup-veil\{display:block\}/.test(after))
+check('bootstrap 先上锁再判断（异常也不会白闪）', /try\{\s*var d=document\.documentElement;[\s\S]{0,400}?d\.classList\.add\('dsu-lock'\);/.test(inlineBootstrap(after)))
 check('幂等：二次调用不重复注入', TAPS[0](after) === after)
 check('原 <div id="root"></div> 仍在（应用照常挂载）', after.includes('<div id="root"></div>'))
 check('内联载荷里没有裸的 < （防 </script> 提前闭合）', !inlinePayload(after).includes('<'))
