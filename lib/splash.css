@@ -539,6 +539,10 @@ html[data-windows-titlebar].dsu-lock body {
   opacity: 1;
   pointer-events: auto;
 }
+/* 自动播放档只隐藏按钮与按键提示，身份资料卡仍要显示。
+   .dsu-btn 自带 display:inline-flex，会盖掉 [hidden] 的 UA display:none，必须显式补一条。 */
+.dsu-btn[hidden],
+.dsu-hint[hidden] { display: none !important; }
 .dsu-btn {
   display: inline-flex;
   align-items: center;

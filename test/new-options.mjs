@@ -216,6 +216,26 @@ console.log('\n[1] 自动播放三档')
   check('off：C.autoPlay = off', off.api && off.api.config.autoPlay === 'off')
   check('off：进入逐步确认档（第 1、2 步都停）', off.api && off.api.config.requireInteraction === true)
 
+  /* 2026-10-19 回归：full/once 档曾经整块不加 .dsu-action 的 dsu-in，
+     而身份资料卡就住在 .dsu-action 里（默认 opacity:0），导致第二步的
+     「身份名称/编号/权限等级」全看不见。现在改为只隐藏按钮与提示。 */
+  {
+    const src = fs.readFileSync(BUNDLE, 'utf8')
+    const block = /if \(C\.autoPlay === 'full'\) \{([\s\S]*?)\} else \{/.exec(src)
+    const fullBranch = block ? block[1] : ''
+    /* showAction 里不应该再出现「整块收起 dsu-action」；
+       注意 hideAction() 里的 remove 是确认后收起的正常逻辑，不在检查范围 */
+    const showActionBody = /function showAction\(step\) \{([\s\S]*?)\n  \}/.exec(src)
+    check('full 档：身份卡容器仍然淡入（showAction 里不再整块移除 dsu-in）',
+      !!showActionBody && !/ui\.action\.classList\.remove\('dsu-in'\)/.test(showActionBody[1]) &&
+      /ui\.action\.classList\.add\('dsu-in'\)/.test(fullBranch))
+    check('full 档：改成隐藏按钮与按键提示',
+      /ui\.btn\.hidden = true/.test(fullBranch) && /ui\.hint\.hidden = true/.test(fullBranch))
+    const cssSrc2 = fs.readFileSync(new URL('../lib/splash.css', import.meta.url), 'utf8')
+    check('CSS 补齐了 [hidden] 的 display:none（否则 inline-flex 会盖掉）',
+      /\.dsu-btn\[hidden\],\s*\n\s*\.dsu-hint\[hidden\] \{ display: none !important; \}/.test(cssSrc2))
+  }
+
   const bad = run({ config: { autoPlay: 'whatever' } })
   check('非法值回落到 off（保守，不擅自全自动）', bad.api && bad.api.config.autoPlay === 'off', bad.api && bad.api.config.autoPlay)
 
