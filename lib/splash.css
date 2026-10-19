@@ -11,6 +11,13 @@
  *   --dsu-zh    微软雅黑（对应参考片底部中文小字幕）
  * ========================================================================== */
 
+/* Desktop 的原生标题栏探针在 body 下；启动期间让按钮底色透明，透出背景图。
+   同时覆盖客户端自举和重播，解除 dsu-lock 后恢复宿主主题 token。 */
+html[data-windows-titlebar].dsu-lock body {
+  --dsw-specific-sidebar-fill: transparent !important;
+  --dsw-alias-label-primary: #fff !important;
+}
+
 #dsh-startup-root,
 #dsh-startup-root *,
 #dsh-startup-root *::before,
