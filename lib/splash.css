@@ -1274,6 +1274,46 @@ html[data-windows-titlebar].dsu-lock body {
   95%  { transform: translate(-2px, 0); opacity: 0.9; }
   95.5%{ transform: translate(1px, 1px); }
 }
+/* ── 第 5 款立绘「长征（逻辑）」：人民英雄纪念碑群像浮雕 ────────────────
+   这张是逐帧素材抽出的静态图（黑底已抠成透明），主体是红黑霓虹浮雕，
+   与前面几款的线稿人像不同 —— 线稿靠描边辉光，浮雕靠"体积感 + 呼吸感"。
+   所以单独给一套赛博电子风动效：辉光呼吸 + 色彩呼吸 + 偶发信号错位。
+   注意：不要在这里加横向亮带 / 红色闪光扫描 —— 会盖住浮雕本身的层次。 */
+#dsh-startup-root .dsu-mascot[data-mascot="4"] .dsu-mascot-img {
+  animation:
+    dsu-mascot-4-scan 4.6s ease-in-out infinite,
+    dsu-mascot-4-hue 7s ease-in-out infinite,
+    dsu-mascot-4-glitch 9s steps(1, end) infinite;
+}
+/* 霓虹辉光呼吸：光晕明暗起伏（不做横向亮带扫描，避免糊住浮雕细节） */
+@keyframes dsu-mascot-4-scan {
+  0%, 100% {
+    filter: drop-shadow(0 0 10px rgba(255, 46, 46, 0.42)) drop-shadow(0 0 30px rgba(255, 30, 30, 0.22)) brightness(0.96) contrast(1.06);
+  }
+  45% {
+    filter: drop-shadow(0 0 18px rgba(255, 60, 60, 0.7)) drop-shadow(0 0 46px rgba(255, 20, 20, 0.35)) brightness(1.12) contrast(1.12);
+  }
+  70% {
+    filter: drop-shadow(0 0 14px rgba(255, 90, 60, 0.55)) drop-shadow(0 0 38px rgba(255, 40, 20, 0.28)) brightness(1.04) contrast(1.09);
+  }
+}
+/* 色彩呼吸：在正红与偏橙之间轻微游走，像 CRT 灯管不稳 */
+@keyframes dsu-mascot-4-hue {
+  0%, 100% { transform: translateZ(0) scale(1); }
+  50%      { transform: translateZ(0) scale(1.012); }
+}
+/* 偶发信号错位：每隔 9 秒闪一次，幅度比人像款更大（浮雕更有"信号不稳"感） */
+@keyframes dsu-mascot-4-glitch {
+  0%, 92.4%, 96.6%, 100% { transform: translate(0, 0) skewX(0); }
+  93%   { transform: translate(-4px, 1px) skewX(-0.6deg); opacity: 0.82; }
+  93.6% { transform: translate(3px, -1px) skewX(0.5deg); opacity: 0.94; }
+  94.2% { transform: translate(-2px, 2px) skewX(-0.3deg); opacity: 0.88; }
+  95%   { transform: translate(1px, -1px); opacity: 0.97; }
+}
+@media (prefers-reduced-motion: reduce) {
+  #dsh-startup-root .dsu-mascot[data-mascot="4"] .dsu-mascot-img { animation: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   #dsh-startup-root .dsu-mascot-img { animation: none; }
 }

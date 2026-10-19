@@ -327,8 +327,15 @@ console.log('\n[5] 人物立绘 = 空（不显示立绘）')
   const other = run({ config: { mascot: 2 } })
   check('其它编号照常渲染', other.mascotImages.length === 1)
 
+  /* 越界编号的安全兜底：
+     2026-10-19 起 cfg() 不再写死立绘上限（写死会让新增的第 5 款「长征（逻辑）」失效），
+     所以靠渲染时校正。这里断言"不会渲染出 undefined/空图"，而不是断言配置值被改。 */
   const overflow = run({ config: { mascot: 99 } })
-  check('越界编号回落到 0', overflow.api && overflow.api.config.mascot === 0, overflow.api && overflow.api.config.mascot)
+  const overflowSrc = fs.readFileSync(BUNDLE, 'utf8')
+  check('越界编号仍会挂出 1 张图（不会渲染成空白）', overflow.mascotImages.length === 1, overflow.mascotImages.length)
+  check('cfg() 不再写死立绘上限（否则新立绘永远显示不出来）',
+    !/MASCOTS\.length\) : 4$/.test(overflowSrc))
+  check('渲染时对越界编号做了校正', /if \(!\(C\.mascot < MASCOTS\.length\)\) C\.mascot = 0/.test(overflowSrc))
 
   const showSrc = fs.readFileSync(BUNDLE, 'utf8')
   check('showAction 里也守了立绘开关（空时不亮出容器）',
