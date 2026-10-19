@@ -124,10 +124,17 @@ html[data-windows-titlebar].dsu-lock body {
   z-index: 90;
 }
 
-#dsh-startup-root.dsu-gone {
-  opacity: 0;
+/* 退场：必须写在 dsu-handoff 之后才生效；用 .dsu-handoff.dsu-gone 提高优先级，
+   否则会被上面 780ms 的 opacity 过渡覆盖（实测退场拖到近 2 秒）。
+   620ms → 380ms，动画结束/按 Enter 之后不再留一段纯黑。 */
+#dsh-startup-root.dsu-gone,
+#dsh-startup-root.dsu-handoff.dsu-gone {
+  opacity: 0 !important;
   pointer-events: none;
-  transition: opacity 620ms cubic-bezier(0.4, 0, 0.2, 1);
+  /* 淡出期间不再占层：避免 2147483000 的整屏层在透明后仍压住主界面，
+     导致「动画结束了还黑一下」（2026-10-19） */
+  z-index: -1 !important;
+  transition: opacity 380ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* ── 底板 ───────────────────────────────────────────────────────────────── */
@@ -1230,8 +1237,11 @@ html[data-windows-titlebar].dsu-lock body {
   background: rgba(8, 8, 10, 0.72);
   backdrop-filter: blur(3px);
   opacity: 0;
-  transition: opacity 480ms cubic-bezier(.2,.9,.3,1);
+  transition: opacity 320ms cubic-bezier(.2,.9,.3,1);
 }
+/* 淡出期间不再拦截任何点击/命中测试：否则窗口已透明，却仍挡在主界面上，
+   手指/鼠标点下去没反应，看起来就像"黑了一下还没进去"（2026-10-19） */
+.dsu-event:not(.dsu-in) { pointer-events: none; }
 .dsu-event[hidden] { display: none; }
 .dsu-event.dsu-in { opacity: 1; }
 .dsu-event-card {

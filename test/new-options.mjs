@@ -271,6 +271,17 @@ console.log('\n[4] 降世事件窗口：默认关闭 + 首次启动弹一次')
   const zEvent = /\.dsu-event \{[\s\S]*?z-index: (\d+);\s*\n\s*position: fixed/.exec(cssSrc)
   const zEventNum = zEvent ? Number(zEvent[1]) : 0
   check('事件层 z-index 高于黑幕层 2147482999 与挂载点 2147483000', zEventNum > 2147483000, zEventNum)
+
+  /* 2026-10-19 回归：动画结束后不能还黑一会儿。
+     以前 finish() 先 620ms 淡出再等 900ms 才移除 root，事件窗口还要再串行
+     淡出 460ms，累计近 2 秒整屏黑。现在：root 直接摘、事件层淡出与退场并行。 */
+  check('finish 直接移除 root（不再延时 900ms）',
+    /root\.classList\.add\('dsu-gone'\)\s*\n\s*if \(root\.parentNode\) root\.parentNode\.removeChild\(root\)/.test(gateSrc))
+  check('事件窗口确认后立刻放行（不再串行等淡出）',
+    /setTimeout\(function \(\) \{\s*\n\s*dismiss\(\)\s*\n\s*resolve\(\)/.test(gateSrc) &&
+    !/^\s*setTimeout\(function \(\) \{ dismiss\(\); setTimeout\(resolve, 60\) \}, 260\)/m.test(gateSrc))
+  check('事件层淡出期间不拦截点击',
+    /\.dsu-event:not\(\.dsu-in\) \{ pointer-events: none; \}/.test(cssSrc))
 }
 
 /* ═══ 5. 人物立绘「空」 ══════════════════════════════════════════════════ */
