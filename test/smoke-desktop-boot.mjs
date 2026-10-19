@@ -181,7 +181,7 @@ function boot(opts) {
     mod.apply(ctx)
   }
 
-  return { win, head, body, html, requested, warnings, timers, registrations, document: documentStub, apply: doApply }
+  return { win, head, body, html, requested, warnings, timers, registrations, document: documentStub, apply: doApply, sandbox }
 }
 
 const tags = (sandbox, pred) => walk(sandbox.head).concat(walk(sandbox.body)).filter(pred)
@@ -329,6 +329,25 @@ console.log('\n[4] 自举失败 → 把页面还回去')
   const s = boot({ fetchFails: true, session: { 'dsh-startup-screen:shown': '1' } }); s.apply()
   await settle()
   check('session 已播 + 配置接口不可达 → 宁可不播（不重复打扰）', rootOf(s) === null)
+}
+
+console.log('\n[4b] Desktop 自举后的预览读取最新保存配置')
+{
+  const options = { config: { enabled: true, mode: 'always', identity: 'OLD' } }
+  const s = boot(options); s.apply()
+  await settle()
+  // 只加载跳过态 API，避免把 DOM stub 当作动画渲染器。
+  s.win.__DSH_STARTUP_SKIP__ = true
+  const runtime = fs.readFileSync(new URL('../lib/splash.js', import.meta.url), 'utf8')
+  vm.runInContext(runtime, s.sandbox, { filename: 'splash.js' })
+  options.config = { enabled: true, mode: 'always', identity: 'SAVED', mascot: -1 }
+  const before = s.requested.length
+  await s.win.__DSH_STARTUP_API__.replay()
+  check('重播前重新请求配置接口', s.requested.length === before + 1 &&
+    s.requested.at(-1).url === '/dsh-startup/config')
+  check('配置请求绕过缓存', s.requested.at(-1).init.cache === 'no-store')
+  check('重挂脚本前身份与立绘更新为保存值',
+    s.win.__DSH_STARTUP__.identity === 'SAVED' && s.win.__DSH_STARTUP__.mascot === -1)
 }
 
 console.log('\n[5] 自举与设置面板互不干扰')

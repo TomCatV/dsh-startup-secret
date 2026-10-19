@@ -198,10 +198,16 @@ check('恢复默认 POST {action:"reset"}', resetPost && JSON.parse(resetPost.in
 windowStub.__DSH_STARTUP_API__ = { replay() { windowStub.__replayed = true } }
 tree = renderPanel()
 const previewBtn = find(tree, (n) => n.type === 'button' && n.props.children === '立即预览')
-previewBtn.props.onClick()
+await previewBtn.props.onClick()
 check('立即预览调用 __DSH_STARTUP_API__.replay()', windowStub.__replayed === true)
+check('预览请求绕过缓存', requests.at(-1).init.cache === 'no-store')
+check('预览配置来自接口', windowStub.__DSH_STARTUP__.identity === CFG.identity)
+windowStub.__DSH_STARTUP_SKIP__ = true
+windowStub.__replayed = false
+await previewBtn.props.onClick()
+check('跳过态仍可主动重播', windowStub.__replayed === true && !windowStub.__reloaded)
 delete windowStub.__DSH_STARTUP_API__
-previewBtn.props.onClick()
+await previewBtn.props.onClick()
 check('没有 API 时回退到 location.reload()', windowStub.__reloaded === true)
 
 console.log('\n============================')
