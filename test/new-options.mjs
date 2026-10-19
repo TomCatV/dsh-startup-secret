@@ -216,9 +216,11 @@ console.log('\n[1] 自动播放三档')
   check('off：C.autoPlay = off', off.api && off.api.config.autoPlay === 'off')
   check('off：进入逐步确认档（第 1、2 步都停）', off.api && off.api.config.requireInteraction === true)
 
-  /* 2026-10-19 回归：full/once 档曾经整块不加 .dsu-action 的 dsu-in，
-     而身份资料卡就住在 .dsu-action 里（默认 opacity:0），导致第二步的
-     「身份名称/编号/权限等级」全看不见。现在改为只隐藏按钮与提示。 */
+  /* 2026-10-19 回归（两次修复）：
+     ① full 档曾经整块不加 .dsu-action 的 dsu-in，而身份资料卡住在它里面（默认 opacity:0），
+        第二步的「身份名称/编号/权限等级」全看不见 → 改为只隐藏按钮与提示；
+     ② 只改①还不够：stepLoop 在自动播放分支里紧接着调了 hideAction()，
+        把刚加上的 dsu-in 又摘掉，卡片依旧不可见 → full 档不得再调 hideAction()。 */
   {
     const src = fs.readFileSync(BUNDLE, 'utf8')
     const block = /if \(C\.autoPlay === 'full'\) \{([\s\S]*?)\} else \{/.exec(src)
@@ -231,6 +233,11 @@ console.log('\n[1] 自动播放三档')
       /ui\.action\.classList\.add\('dsu-in'\)/.test(fullBranch))
     check('full 档：改成隐藏按钮与按键提示',
       /ui\.btn\.hidden = true/.test(fullBranch) && /ui\.hint\.hidden = true/.test(fullBranch))
+    /* 核心：自动播放分支里 showAction 之后不能紧跟 hideAction（否则卡片又被藏起来） */
+    check('自动播放分支不再紧跟 hideAction()（卡片得以保持可见）',
+      !/showAction\(step\)\s*\n\s*hideAction\(\)/.test(src))
+    check('离开第二步后卡片会被收起（不残留到后续步骤）',
+      /step\.action !== 'confirm'[\s\S]{0,220}?ui\.card\.hidden = true/.test(src))
     const cssSrc2 = fs.readFileSync(new URL('../lib/splash.css', import.meta.url), 'utf8')
     check('CSS 补齐了 [hidden] 的 display:none（否则 inline-flex 会盖掉）',
       /\.dsu-btn\[hidden\],\s*\n\s*\.dsu-hint\[hidden\] \{ display: none !important; \}/.test(cssSrc2))
