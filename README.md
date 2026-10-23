@@ -13,6 +13,14 @@ DeepSeek Harness 的启动界面与启动动画插件（二次创作版）。
 
 ## 更新记录
 
+### v1.5.0
+
+- **GitHub 一键安装**：可直接使用 `dsh plugin --profile web add
+  github:huzhengcai471-crypto/dsh-startup-secret` 安装，无需先下载 `.tgz`。
+- **安装文档重整**：当前 DSH 自动登记 `dsh.profile.bundles`；旧版手工补写步骤改为
+  故障排查备用方案，避免重复注册 bundle。
+- **发布包同步**：包内发布说明与安装入口统一更新到 1.5.0。
+
 ### v1.4.2
 
 - **新增第 5 款立绘「长征（逻辑）」**　群像浮雕款，去掉顶部黑边、黑底转透明，
@@ -126,24 +134,32 @@ DeepSeek Harness 的启动界面与启动动画插件（二次创作版）。
 
 ## 安装
 
-**推荐用脚本安装**（脚本会自动完成下面两步，避免漏掉关键步骤）：
+**从 GitHub 在线安装**（无需先下载或解压 `.tgz`）：
+
+```bash
+dsh plugin --profile web add github:huzhengcai471-crypto/dsh-startup-secret
+```
+
+当前 DSH 会在 `plugin add` 后自动登记 bundle；安装完成后重启 DSH 即可。桌面端请把
+`web` 替换为 `desktop`。
+
+**本地安装脚本**（适合已下载发布包或离线安装；脚本会自动完成安装和 bundle 注册）：
 
 - **Windows**：解压后**双击「安装.cmd」**
 - **macOS / Linux**：`./install.sh`（可加参数 `./install.sh desktop` 装到桌面端）
 
-### 手动安装（两步，缺一不可）
+### 旧版 DSH 手动排查
 
-DSH 加载插件依赖 `dsh.profile.bundles` 层堆栈，但 `dsh plugin add` 只是
-`pnpm add` 的转发，**只写 dependencies、不会自动把包名加入 bundles**。
-漏掉第二步，插件会"装上了但完全没效果"（不报错、无动画、设置页无入口）。
+较旧的 DSH 版本可能只把包写入 `dependencies`，没有自动登记
+`dsh.profile.bundles`。如果安装后没有动画或设置入口，再按下面两步补写。
 
 **第 1 步：安装依赖**
 
 ```bash
-dsh plugin --profile web add ./dsh-startup-secret-1.3.1.tgz
+dsh plugin --profile web add github:huzhengcai471-crypto/dsh-startup-secret
 ```
 
-**第 2 步：把插件加入 bundles**（关键）
+**第 2 步：把插件加入 bundles**
 
 打开 `~/.dsh/profiles/web/package.json`，在 `dsh.profile.bundles` 数组里加入
 `"dsh-startup-secret"`：

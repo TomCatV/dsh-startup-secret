@@ -1,6 +1,17 @@
 # 安装说明
 
-## 一、用脚本安装（推荐，最省事）
+## 一、从 GitHub 在线安装
+
+无需下载或解压发布包，直接运行：
+
+```bash
+dsh plugin --profile web add github:huzhengcai471-crypto/dsh-startup-secret
+```
+
+当前 DSH 会在 `plugin add` 后自动登记 bundle；安装完成后重启 DSH 即可。桌面端请把
+`web` 替换为 `desktop`。
+
+## 二、用本地脚本安装
 
 脚本会自动完成「安装依赖」+「写入 dsh.profile.bundles」两步。
 
@@ -9,25 +20,23 @@
 
 装完 **重启 dsh web**（关掉启动器窗口再重新双击）。刷新页面就能看到启动动画。
 
-## 二、手动安装（两步，缺一不可）
+## 三、旧版 DSH 手动排查
 
 ### 关键：为什么装完没效果
 
-DSH 靠 **`dsh.profile.bundles`** 这个层堆栈决定加载哪些插件。而
-`dsh plugin add` 只是 **`pnpm add` 的转发**，它只把包写进 `dependencies`，
-**不会自动把包名加入 `dsh.profile.bundles`**。
+较旧的 DSH 版本可能只把包写进 `dependencies`，没有自动登记
+**`dsh.profile.bundles`**。
 
 只有包名出现在 `dsh.profile.bundles` 里时，插件的 `cordis.patch.yml`
 （里面的 `insert`）才会作为一层被 compose，插件的 Host 半侧和浏览器半侧
 才会真正被加载。
 
-**所以只跑 `dsh plugin add`、不补 bundles，结果就是：装上了、不报错、
-但启动动画不显示、设置页也没有「启动动画」入口。**
+如果安装后没有启动动画或设置入口，再手工补写 bundle：
 
 ### 第 1 步：安装依赖
 
 ```bash
-dsh plugin --profile web add ./dsh-startup-secret-1.3.1.tgz
+dsh plugin --profile web add github:huzhengcai471-crypto/dsh-startup-secret
 ```
 
 ### 第 2 步：写入 bundles（关键）
@@ -66,7 +75,7 @@ dsh plugin --profile web add ./dsh-startup-secret-1.3.1.tgz
 
 ---
 
-## 二、手工安装（不用 pnpm）
+## 四、手工安装（不用 pnpm）
 
 1. 把 `plugin/` 目录解压到任意位置
 2. 让 profile 能解析到它 —— 在 `~/.dsh/profiles/web/node_modules/` 下建目录联接：
@@ -87,7 +96,7 @@ dsh plugin --profile web add ./dsh-startup-secret-1.3.1.tgz
 
 ---
 
-## 三、验证装好了
+## 五、验证装好了
 
 重启后，**没带 token** 访问插件路由：
 
@@ -99,7 +108,7 @@ dsh plugin --profile web add ./dsh-startup-secret-1.3.1.tgz
 
 ---
 
-## 四、卸载
+## 六、卸载
 
 ```bash
 dsh plugin --profile web remove dsh-startup-secret
@@ -109,7 +118,7 @@ dsh plugin --profile web remove dsh-startup-secret
 
 ---
 
-## 五、配置项
+## 七、配置项
 
 设置页 → **启动动画**（order 26）：
 
@@ -148,7 +157,7 @@ dsh plugin --profile web remove dsh-startup-secret
 
 ---
 
-## 六、环境要求
+## 八、环境要求
 
 | 项 | 要求 |
 |---|---|
@@ -160,7 +169,7 @@ dsh plugin --profile web remove dsh-startup-secret
 
 ---
 
-## 七、包内容
+## 九、包内容
 
 ```
 lib/index.js          Host 半：路由 + index.html 注入

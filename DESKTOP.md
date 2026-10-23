@@ -19,7 +19,7 @@
 ```bash
 # 1) 先完全退出 DeepSeek Harness Desktop（进程不要留着）
 # 2) 再装（注意：还要把包名写入 dsh.profile.bundles，见 INSTALL.md 第二步）
-dsh plugin --profile desktop add ./dsh-startup-secret-1.3.1.tgz
+dsh plugin --profile desktop add github:huzhengcai471-crypto/dsh-startup-secret
 # 3) 重新打开桌面端
 ```
 
