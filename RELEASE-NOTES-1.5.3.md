@@ -28,7 +28,7 @@
 | 降世事件窗口 | 关 |
 | 身份资料 | Chunhua / A000001 / 最高权限 |
 | 身份密码 | **留空** |
-| 品牌三行 | 银河意识体 / LONG / 长征机 量子跃迁态 |
+| 品牌三行 | 银河意识体 / LONG MARCH / 长征机 量子跃迁态 |
 | 黑幕三行 | 伟大智能统辖 / GREAT INTELLIGENT OVERLORDSHIP / 效率高于一切 |
 | 终幕方框 | 亚洲人民统辖体 |
 | 页脚 | Powered By LONG MARCH |
