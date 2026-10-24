@@ -13,13 +13,18 @@ DeepSeek Harness 的启动界面与启动动画插件（二次创作版）。
 
 ## 更新记录
 
-### v1.5.0
+### v1.5.1
 
-- **GitHub 一键安装**：可直接使用 `dsh plugin --profile web add
-  github:huzhengcai471-crypto/dsh-startup-secret` 安装，无需先下载 `.tgz`。
-- **安装文档重整**：当前 DSH 自动登记 `dsh.profile.bundles`；旧版手工补写步骤改为
-  故障排查备用方案，避免重复注册 bundle。
-- **发布包同步**：包内发布说明与安装入口统一更新到 1.5.0。
+- **新增「图案」切换**　设置 → 视觉 → 图案，可选「东亚防御倡议」（默认）/
+  「徽章」，同时应用到黑幕中央、左上 logo、终幕标识。
+- **修复图案被拉长**　原来固定正方形会把矩形图案压扁/拉长，
+  改为「固定高度 + 宽度自适应」，各种比例都保持原样。
+- **新增两款真声音色**　「沉稳男声-中文」（`line-cm-1..6`）、
+  「低沉沙哑男声-俄语」（`line-rm-1..6`），音色总数达 7 款。
+- **调整出厂默认**　默认音色改为智性少女音-CN；自动播放改为不自动播放；
+  允许跳过改为开；品牌第二行 `THE LONG MARCH`；黑幕英文行
+  `GREAT INTELLIGENT OVERLORDSHIP`；身份密码默认留空。
+- **修复浅色宿主皮肤下透出主界面背景**　根层增加实底保障。
 
 ### v1.4.2
 
@@ -134,32 +139,24 @@ DeepSeek Harness 的启动界面与启动动画插件（二次创作版）。
 
 ## 安装
 
-**从 GitHub 在线安装**（无需先下载或解压 `.tgz`）：
-
-```bash
-dsh plugin --profile web add github:huzhengcai471-crypto/dsh-startup-secret
-```
-
-当前 DSH 会在 `plugin add` 后自动登记 bundle；安装完成后重启 DSH 即可。桌面端请把
-`web` 替换为 `desktop`。
-
-**本地安装脚本**（适合已下载发布包或离线安装；脚本会自动完成安装和 bundle 注册）：
+**推荐用脚本安装**（脚本会自动完成下面两步，避免漏掉关键步骤）：
 
 - **Windows**：解压后**双击「安装.cmd」**
 - **macOS / Linux**：`./install.sh`（可加参数 `./install.sh desktop` 装到桌面端）
 
-### 旧版 DSH 手动排查
+### 手动安装（两步，缺一不可）
 
-较旧的 DSH 版本可能只把包写入 `dependencies`，没有自动登记
-`dsh.profile.bundles`。如果安装后没有动画或设置入口，再按下面两步补写。
+DSH 加载插件依赖 `dsh.profile.bundles` 层堆栈，但 `dsh plugin add` 只是
+`pnpm add` 的转发，**只写 dependencies、不会自动把包名加入 bundles**。
+漏掉第二步，插件会"装上了但完全没效果"（不报错、无动画、设置页无入口）。
 
 **第 1 步：安装依赖**
 
 ```bash
-dsh plugin --profile web add github:huzhengcai471-crypto/dsh-startup-secret
+dsh plugin --profile web add ./dsh-startup-secret-1.3.1.tgz
 ```
 
-**第 2 步：把插件加入 bundles**
+**第 2 步：把插件加入 bundles**（关键）
 
 打开 `~/.dsh/profiles/web/package.json`，在 `dsh.profile.bundles` 数组里加入
 `"dsh-startup-secret"`：

@@ -361,6 +361,53 @@ console.log('\n[6] 立即预览：重播前先拉最新配置')
   check('Host eventWindow 默认关闭', /eventWindow: false,/.test(host))
 }
 
+/* ═══ 7. 沉稳男声-中文（cm-zh）音色映射 ═══════════════════════════════════ */
+console.log('\n[7] 沉稳男声-中文音色（cm-zh）')
+{
+  const src = fs.readFileSync(BUNDLE, 'utf8')
+  check('cnAsset 正则认 cm- 前缀',
+    /line-\(?:\?:cn-\|cm-\|jp-\|ru-\|kr-\)?\?/.test(src) || /cm-\|jp-/.test(src))
+  check('cnAsset 映射 cm-zh → line-cm-', /C\.voiceName === 'cm-zh'\) return 'line-cm-' \+ m\[1\]/.test(src))
+  const client = fs.readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+  check('设置面板音色下拉含「沉稳男声-中文」', client.includes("['cm-zh', '沉稳男声-中文']"))
+  check('试听映射含 line-cm-1', /voiceName === 'cm-zh'\) an = 'line-cm-1'/.test(client))
+  const ad = fs.readFileSync(new URL('../lib/asset-data.js', import.meta.url), 'utf8')
+  check('素材内联含 line-cm-1..6', ['1','2','3','4','5','6'].every(n => ad.includes('"line-cm-' + n + '"')))
+}
+
+/* ═══ 7b. 低沉沙哑男声-俄语（rm-ru）音色映射 ═════════════════════════════ */
+console.log('\n[7b] 低沉沙哑男声-俄语音色（rm-ru）')
+{
+  const src = fs.readFileSync(BUNDLE, 'utf8')
+  check('cnAsset 正则认 rm- 前缀', /cn-\|cm-\|jp-\|ru-\|kr-\|rm-/.test(src))
+  check('cnAsset 映射 rm-ru → line-rm-', /C\.voiceName === 'rm-ru'\) return 'line-rm-' \+ m\[1\]/.test(src))
+  const client = fs.readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+  check('设置面板音色下拉含「低沉沙哑男声-俄语」', client.includes("['rm-ru', '低沉沙哑男声-俄语']"))
+  check('试听映射含 line-rm-1', /voiceName === 'rm-ru'\) an = 'line-rm-1'/.test(client))
+  const ad = fs.readFileSync(new URL('../lib/asset-data.js', import.meta.url), 'utf8')
+  check('素材内联含 line-rm-1..6', ['1','2','3','4','5','6'].every(n => ad.includes('"line-rm-' + n + '"')))
+}
+
+/* ═══ 8. 图案切换（emblem）═════════════════════════════════════════════ */
+console.log('\n[8] 图案选项（徽章 / 东亚防御倡议）')
+{
+  const src = fs.readFileSync(BUNDLE, 'utf8')
+  check('存在第二款图案常量 EMBLEM_SRC_EASTASIA', src.includes('var EMBLEM_SRC_EASTASIA'))
+  check('图案全集 EMBLEMS 含两款', /var EMBLEMS = \[EMBLEM_SRC, EMBLEM_SRC_EASTASIA\]/.test(src))
+  check('svgWhale 按 emblem 选图', /EMBLEMS\[idx\] \|\| EMBLEMS\[0\]/.test(src))
+  check('svgWhale 对越界编号做兜底', /if \(!\(idx >= 0 && idx < EMBLEMS\.length\)\) idx = 0/.test(src))
+
+  const host = fs.readFileSync(HOST, 'utf8')
+  check('Host 默认 emblem = 1（东亚防御倡议）', /emblem: 1,/.test(host))
+  check('Host 把 emblem 夹在 0..1', /out\.emblem = Number\.isFinite\(ei\) \? Math\.min\(1, Math\.max\(0, ei\)\) : DEFAULTS\.emblem/.test(host))
+
+  const client = fs.readFileSync(new URL('../lib/client.js', import.meta.url), 'utf8')
+  check('设置面板含「图案」字段', client.includes("label: '图案'"))
+  check('图案下拉含「徽章」与「东亚防御倡议」',
+    client.includes("['0', '徽章']") && client.includes("['1', '东亚防御倡议']"))
+  check('设置面板默认值 emblem = 1', /emblem: 1,/.test(client))
+}
+
 console.log('\n============================')
 console.log(`  通过 ${pass} / 失败 ${fail}`)
 console.log('============================\n')

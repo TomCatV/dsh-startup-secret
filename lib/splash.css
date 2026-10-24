@@ -69,7 +69,11 @@ html[data-windows-titlebar].dsu-lock body {
   inset: 0;
   z-index: 2147483000;
   overflow: hidden;
+  /* 根层必须完全实底，杜绝任何透明缝透出宿主主界面背景。
+     宿主皮肤可能被其它插件改成象牙白/浅色，若根层有透明或半透明缝隙，
+     动画边缘就会漏出主界面底色。这里强制纯黑实底，两种主题下都不透底。 */
   background: #000;
+  background-clip: padding-box;
   color: var(--dsu-ink);
   font-family: var(--dsu-din);
   -webkit-font-smoothing: antialiased;
@@ -113,6 +117,11 @@ html[data-windows-titlebar].dsu-lock body {
   --dsu-gold: #ffde00;
   --dsu-sub-glow: 0 0 6px rgba(0, 0, 0, 0.9);
   background: #000;
+}
+
+/* 浅色（暖白）主题：底板实底铺满，杜绝透出宿主浅色主界面 */
+#dsh-startup-root.dsu-light {
+  background: #e5e3df;
 }
 
 /* 首屏兜底：脚本还没跑起来时也要先糊住整个窗口，避免闪出应用本体 */
@@ -212,8 +221,13 @@ html[data-windows-titlebar].dsu-lock body {
   fill: #fdd000;
 }
 .dsu-black .dsu-whale {
-  width: 122px;
+  /* 用高度定尺寸、宽度自适应：正方形徽章不受影响，
+     矩形图案（如 512×439 的「东亚防御倡议」）也能保持原始比例不被拉长。
+     max-width 兜住超宽图案，避免横向溢出。 */
   height: 122px;
+  width: auto;
+  max-width: 220px;
+  object-fit: contain;
   color: #fff;
   margin-bottom: 18px;
 }
@@ -426,8 +440,11 @@ html[data-windows-titlebar].dsu-lock body {
 }
 .dsu-logo svg,
 .dsu-logo img {
-  width: 84px;
+  /* 高度固定、宽度自适应，保持图案原始宽高比（矩形图案不被压扁/拉长） */
   height: 84px;
+  width: auto;
+  max-width: 180px;
+  object-fit: contain;
   color: var(--dsu-ink);
 }
 .dsu-logolabel {
@@ -448,15 +465,17 @@ html[data-windows-titlebar].dsu-lock body {
   opacity: 0.5;
 }
 
-/* 右侧等宽信息行（对应参考片 "· ID CONFIRMED : JOYC"） */
+/* 右侧等宽信息行（对应参考片 "· ID CONFIRMED : JOYC"）
+   原定位在屏幕中右（left:calc(50%+190px); top:49%），会与准星/状态字重叠。
+   改为对齐页脚「Powered By LONG MARCH」正下方，右对齐，避免与中间内容打架。 */
 .dsu-idline {
   position: absolute;
-  left: calc(50% + 190px);
-  top: 49%;
-  transform: translateY(-50%) translateX(16px);
-  z-index: 22;
+  right: 46px;
+  bottom: 24px;
+  transform: translateY(16px);
+  z-index: 24;
   font-family: var(--dsu-mono);
-  font-size: 12px;
+  font-size: 11px;
   letter-spacing: 0.2em;
   color: var(--dsu-ink-soft);
   opacity: 0;
@@ -464,7 +483,7 @@ html[data-windows-titlebar].dsu-lock body {
   transition-delay: 520ms;
   white-space: nowrap;
 }
-.dsu-idline.dsu-in { opacity: 1; transform: translateY(-50%); }
+.dsu-idline.dsu-in { opacity: 1; transform: translateY(0); }
 
 /* ── 环形准星（验证通过）───────────────────────────────────────────────── */
 /* 照原片：环居中、直径约 56vw，状态字就落在环心里，两者是一个整体。
@@ -718,7 +737,14 @@ html[data-windows-titlebar].dsu-lock body {
   align-items: center;
   gap: 10px;
 }
-.dsu-w3 svg, .dsu-w3 img { width: 76px; height: 76px; color: var(--dsu-ink); }
+.dsu-w3 svg, .dsu-w3 img {
+  /* 高度固定、宽度自适应，保持图案原始宽高比 */
+  height: 76px;
+  width: auto;
+  max-width: 150px;
+  object-fit: contain;
+  color: var(--dsu-ink);
+}
 .dsu-w3 span {
   font-family: var(--dsu-mono);
   font-size: 10px;
@@ -1171,9 +1197,10 @@ html[data-windows-titlebar].dsu-lock body {
   50% { height: 100%; }
 }
 
-/* 窄窗口里右侧那行等宽小字会和环撞上，直接收掉 */
+/* 窄窗口里 idline 原会与准星环撞上；现在已挪到页脚下方，不再需要隐藏。
+   但仍保留窄屏下的字距收紧，避免和右下立绘/页脚挤在一起。 */
 @media (max-width: 1180px) {
-  .dsu-idline { display: none; }
+  .dsu-idline { letter-spacing: 0.14em; }
 }
 
 /* 无障碍：尊重系统"减少动态效果" */
@@ -1246,6 +1273,13 @@ html[data-windows-titlebar].dsu-lock body {
     letter-spacing: 0.14em;
   }
   #dsh-startup-root .dsu-foot.dsu-in i { width: 16px; }
+  /* idline 对齐页脚正下方：窄屏页脚在 bottom:16px，idline 再往下贴 */
+  #dsh-startup-root .dsu-idline {
+    right: 20px;
+    bottom: 2px;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+  }
   #dsh-startup-root .dsu-skip { right: 20px; top: 28px; font-size: 9px; }
 }
 #dsh-startup-root .dsu-mascot-img {

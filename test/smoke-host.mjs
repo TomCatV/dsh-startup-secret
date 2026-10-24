@@ -144,7 +144,7 @@ r = await call('exact /dsh-startup/asset-data.js')
 check('asset-data.js 200 + 正确 MIME', r.statusCode === 200 && /javascript/.test(r.headers['Content-Type']), r.headers['Content-Type'])
 check('asset-data.js 定义 window.__DSA_ASSETS__', /window\.__DSA_ASSETS__/.test(r.body), '未找到')
 const entries = (r.body.match(/data:audio\/mpeg;base64,/g) || []).length
-check('asset-data.js 内联全部 32 段音频', entries === 32, entries + ' 条')
+check('asset-data.js 内联全部 44 段音频（7 音色×6 + 音效×2）', entries === 44, entries + ' 条')
 check('asset-data.js 体积合理 (>500KB)', r.body.length > 500000, r.body.length + ' bytes')
 
 console.log('\n[4] 配置读写落盘')
