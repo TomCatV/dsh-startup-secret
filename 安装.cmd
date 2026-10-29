@@ -2,123 +2,81 @@
 rem ---------------------------------------------------------------
 rem NOTE: do NOT add a chcp line to this file.
 rem This file is saved as UTF-8. cmd.exe seeks the next line by BYTE
-rem COUNT, so switching the console to codepage 65001 desyncs it on
-rem lines containing multi-byte CJK chars: the following line gets
-rem truncated and run as an external command, and variables vanish.
-rem Verified: UTF-8 file + default console codepage renders Chinese
-rem correctly and keeps variables intact.
-rem Keep comments in this file ASCII-only, and never put a percent
-rem sign or a double quote inside a rem line - both break parsing.
+rem offset, so the encoding must stay stable. Avoid non-ASCII in code
+rem paths; Chinese text is only used inside echo for readability.
 rem ---------------------------------------------------------------
 setlocal enabledelayedexpansion
+cd /d "%~dp0"
 
 echo ============================================
-echo   dsh-startup-secret °²×°½Å±¾
+echo   dsh-startup-secret å®‰è£…è„šæœ¬
 echo ============================================
 echo.
 
-rem 1. ¶¨Î»±¾Ä¿Â¼ÏÂµÄ tgz °ü
+rem 1. å®šä½æœ¬ç›®å½•ä¸‹çš„ tgz åŒ…
 set "TGZ="
-for %%f in (dsh-startup-secret-*.tgz) do set "TGZ=%%~ff"
+for %%f in (dsh-startup-secret-*.tgz) do set "TGZ=%%f"
 if "%TGZ%"=="" (
-  echo [´íÎó] µ±Ç°Ä¿Â¼Ã»ÓÐÕÒµ½ dsh-startup-secret-*.tgz °²×°°ü¡£
-  echo        Çë°Ñ tgz ºÍ±¾½Å±¾·ÅÔÚÍ¬Ò»Ä¿Â¼ºóÖØÊÔ¡£
+  echo [é”™è¯¯] å½“å‰ç›®å½•æ²¡æœ‰æ‰¾åˆ° dsh-startup-secret-*.tgz å®‰è£…åŒ…ã€‚
+  echo        è¯·æŠŠ tgz å’Œæœ¬è„šæœ¬æ”¾åœ¨åŒä¸€ç›®å½•åŽé‡è¯•ã€‚
   pause
   exit /b 1
 )
-echo ÕÒµ½°²×°°ü: %TGZ%
+echo æ‰¾åˆ°å®‰è£…åŒ…: %TGZ%
 echo.
 
-rem 2. ¶¨Î» dsh ÃüÁî£¨ÓÅÏÈ PATH£¬Æä´Î DeepSeek Harness ÄÚÖÃ CLI£©
-set "DSH="
-where dsh >nul 2>nul && set "DSH=dsh"
-if "%DSH%"=="" (
-  if exist "%LOCALAPPDATA%\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd" (
-    set "DSH=%LOCALAPPDATA%\Programs\DeepSeek Harness\resources\runtime\cli\bin\dsh.cmd"
+rem 2. å®šä½ dsh å‘½ä»¤
+set "DSH=dsh"
+where dsh >nul 2>nul
+if errorlevel 1 (
+  if exist "%LOCALAPPDATA%ProgramsWorkBuddyesourcescliindsh.cmd" (
+    set "DSH=%LOCALAPPDATA%ProgramsWorkBuddyesourcescliindsh.cmd"
+  ) else (
+    echo [é”™è¯¯] æ‰¾ä¸åˆ° dsh å‘½ä»¤ã€‚è¯·å…ˆå®‰è£… WorkBuddyï¼Œæˆ–æŠŠ dsh åŠ å…¥ PATHã€‚
+    pause
+    exit /b 1
   )
 )
-if "%DSH%"=="" (
-  echo [´íÎó] ÕÒ²»µ½ dsh ÃüÁî¡£
-  echo        ÇëÏÈ°²×° DeepSeek Harness£¬»ò°Ñ dsh ¼ÓÈëÏµÍ³ PATH¡£
-  pause
-  exit /b 1
-)
-echo Ê¹ÓÃ dsh: %DSH%
+echo ä½¿ç”¨ dsh: %DSH%
 echo.
 
-rem 2.5 ¶¨Î» node£¨ÓÃÓÚ°Ñ²å¼þÐ´Èë dsh.profile.bundles£©
-set "NODE="
-where node >nul 2>nul && set "NODE=node"
-if "%NODE%"=="" (
-  if exist "%LOCALAPPDATA%\Programs\DeepSeek Harness\resources\runtime\bin\node.exe" (
-    set "NODE=%LOCALAPPDATA%\Programs\DeepSeek Harness\resources\runtime\bin\node.exe"
-  )
-)
-
-rem 3. Ñ¯ÎÊ°²×°µ½ÄÄ¸ö profile£¨web / desktop£©
+rem 3. é€‰æ‹© profile
 set "PROFILE=web"
-set /p PROFILE=ÇëÊäÈëÄ¿±ê profile£¨web / desktop£¬Ä¬ÈÏ web£©: 
-if "%PROFILE%"=="" set "PROFILE=web"
+set /p "P=å®‰è£…åˆ°å“ªä¸ª profileï¼Ÿ[web/desktop]ï¼ˆç›´æŽ¥å›žè½¦ = webï¼‰: "
+if not "%P%"=="" set "PROFILE=%P%"
+echo ç›®æ ‡ profile: %PROFILE%
 echo.
 
-rem 4. Èô°²×°µ½ desktop£¬ÌáÊ¾ÏÈÍË³ö×ÀÃæ¶Ë
-if /i "%PROFILE%"=="desktop" (
-  echo [ÌáÊ¾] °²×°µ½ desktop profile Ç°£¬ÇëÏÈÍêÈ«ÍË³ö DeepSeek Harness Desktop
-  echo        £¨º¬ÏµÍ³ÍÐÅÌÍ¼±êÓÒ¼üÍË³ö£©£¬·ñÔòÐ´Èë»á±»¸²¸Ç¡£
+rem 4. å®‰è£…
+echo æ­£åœ¨å®‰è£…...
+call "%DSH%" plugin --profile %PROFILE% add "%TGZ%"
+if errorlevel 1 (
   echo.
+  echo [å¤±è´¥] å®‰è£…å‘½ä»¤è¿”å›žé”™è¯¯ï¼Œè¯·æŠŠä¸Šé¢çš„è¾“å‡ºå‘ç»™ä½œè€…ã€‚
   pause
+  exit /b 1
 )
+echo.
 
-rem 5. Ö´ÐÐ°²×°£¨pnpm add£©
-echo ÕýÔÚ°²×°µ½ %PROFILE% profile ...
-"%DSH%" plugin --profile %PROFILE% add "%TGZ%"
-set "RC=%ERRORLEVEL%"
-
-if not "%RC%"=="0" (
-  echo.
-  echo [´íÎó] °²×°Ê§°Ü£¬ÍË³öÂë %RC%¡£Çë¼ì²éÉÏ·½´íÎóÐÅÏ¢¡£
-  echo.
-  pause
-  exit /b %RC%
-)
-
-rem 6. ¹Ø¼ü²½Öè£º°Ñ²å¼þ¼ÓÈë dsh.profile.bundles
-rem    dsh plugin add Ö»ÊÇ pnpm add µÄ×ª·¢£¬Ö»Ð´ dependencies£¬
-rem    ²»»á°Ñ°üÃû¼ÓÈë dsh.profile.bundles¡£¶ø DSH Ö»ÓÐ°Ñ²å¼þÁÐ½ø
-rem    dsh.profile.bundles ²Å»á¼ÓÔØËüµÄ cordis.patch.yml£¨·ñÔòÍêÈ«ÎÞÐ§¹û£©¡£
-rem    ÕâÀïÓÃ node ÃÝµÈµØ²¹ÉÏÕâÒ»²½¡£
-if "%NODE%"=="" (
-  echo.
-  echo [¾¯¸æ] Î´ÕÒµ½ node£¬Ìø¹ý¡¸Ð´Èë dsh.profile.bundles¡¹²½Öè¡£
-  echo        ²å¼þ½«ÎÞ·¨×Ô¶¯ÉúÐ§¡£ÇëÊÖ¹¤´ò¿ªÏÂÃæÎÄ¼þ£¬ÔÚ dsh.profile.bundles
-  echo        Êý×éÀï¼ÓÈë "dsh-startup-secret" ºóÖØÆô DSH£º
-  echo          %%USERPROFILE%%\.dsh\profiles\%PROFILE%\package.json
-  echo.
+rem 5. å†™å…¥ bundlesï¼ˆå…³é”®ï¼šä¸åŠ è¿™ä¸€æ­¥æ’ä»¶ä¸ä¼šç”Ÿæ•ˆï¼‰
+set "PROFILE_PKG=%USERPROFILE%.dshprofiles%PROFILE%package.json"
+if not exist "%PROFILE_PKG%" (
+  echo [æé†’] æœªæ‰¾åˆ° %PROFILE_PKG%ï¼Œè¯·æ‰‹åŠ¨ç¡®è®¤ bundlesã€‚
   pause
   exit /b 0
 )
-
-set "PROFILE_PKG=%USERPROFILE%\.dsh\profiles\%PROFILE%\package.json"
-"%NODE%" -e "const fs=require('fs');const p=process.argv[1];const j=JSON.parse(fs.readFileSync(p,'utf8'));j.dsh=j.dsh||{};j.dsh.profile=j.dsh.profile||{};j.dsh.profile.bundles=j.dsh.profile.bundles||[];if(!j.dsh.profile.bundles.includes('dsh-startup-secret')){j.dsh.profile.bundles.push('dsh-startup-secret');fs.writeFileSync(p,JSON.stringify(j,null,2)+'\n','utf8');console.log('ÒÑ°Ñ dsh-startup-secret ¼ÓÈë dsh.profile.bundles');}else{console.log('dsh-startup-secret ÒÑÔÚ dsh.profile.bundles ÖÐ');}" "%PROFILE_PKG%"
-set "BRC=%ERRORLEVEL%"
-
-if not "%BRC%"=="0" (
+findstr /c:"dsh-startup-secret" "%PROFILE_PKG%" >nul 2>nul
+if errorlevel 1 (
   echo.
-  echo [¾¯¸æ] ×Ô¶¯Ð´Èë dsh.profile.bundles Ê§°Ü£¬ÍË³öÂë %BRC%¡£
-  echo        ÇëÊÖ¹¤´ò¿ªÏÂÃæÎÄ¼þ£¬ÔÚ dsh.profile.bundles Êý×éÀï¼ÓÈë
-  echo        "dsh-startup-secret" ºóÖØÆô DSH£º
-  echo          %PROFILE_PKG%
-  echo.
-  pause
-  exit /b 0
+  echo [é‡è¦] ä¾èµ–å·²è£…å¥½ï¼Œä½† bundles é‡Œè¿˜æ²¡æœ‰æœ¬æ’ä»¶ã€‚
+  echo        è¯·æ‰“å¼€: %PROFILE_PKG%
+  echo        åœ¨ dsh.profile.bundles æ•°ç»„é‡ŒåŠ å…¥: "dsh-startup-secret"
 )
-
 echo.
 echo ============================================
-echo   °²×°³É¹¦£¡
-echo   ÒÑÐ´Èë: dsh.profile.bundles
-echo   ÇëÖØÆô DSH£¨%PROFILE%£©ºóË¢ÐÂÒ³Ãæ²é¿´Æô¶¯¶¯»­¡£
+echo   å®‰è£…å®Œæˆ
 echo ============================================
 echo.
+echo ä¸‹ä¸€æ­¥: é‡å¯ WorkBuddyï¼ˆå®Œå…¨é€€å‡ºå†æ‰“å¼€ï¼‰ï¼Œå¯åŠ¨åŠ¨ç”»å³å¯ç”Ÿæ•ˆã€‚
 pause
-endlocal
+exit /b 0
