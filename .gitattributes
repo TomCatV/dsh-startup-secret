@@ -19,6 +19,29 @@
 # 在 Linux/macOS 上报 "bad interpreter"。
 *.sh   text eol=lf
 
+# ── 源码 / 文档 / 测试：强制 LF ─────────────────────────────────
+# 2026-10-29 追加。原因：本仓库原先只约束了 .cmd/.sh，其余文件交给
+# core.autocrlf 决定。在 autocrlf=true 的 Windows 上 clone 会把
+# lib/*.js 全部转成 CRLF（实测 splash.js +1847 个 \r，2088823 vs 官方
+# 2086976 字节），源码级断言 test/new-options.mjs 会因此挂掉一项。
+# 这里显式钉死 LF，任何机器 clone / checkout 都得到与发布 tarball
+# 逐字节一致的源码。
+*.js   text eol=lf
+*.mjs  text eol=lf
+*.json text eol=lf
+*.yml  text eol=lf
+*.md   text eol=lf
+*.css  text eol=lf
+*.html text eol=lf
+*.ps1  text eol=lf
+*.txt  text eol=lf
+
+# 无扩展名的文本文件
+LICENSE        text eol=lf
+.gitignore     text eol=lf
+.gitattributes text eol=lf
+.editorconfig  text eol=lf
+
 # ── 二进制资产：不做任何转换 ────────────────────────────────────
 *.tgz  binary
 *.mp3  binary

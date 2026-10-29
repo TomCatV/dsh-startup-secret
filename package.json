@@ -26,8 +26,13 @@
     "打开预览.cmd",
     "安装.cmd",
     "install.sh",
+    "install.ps1",
+    "uninstall.ps1",
     "cordis.patch.yml",
     "README.md",
+    "CREDITS.md",
+    "OPTIMIZATIONS.md",
+    "docs/LF-FAQ.md",
     "INSTALL.md",
     "DESKTOP.md",
     "AUDIO-FIELDS.md",
@@ -50,7 +55,23 @@
     }
   },
   "author": "二次创作作者",
+  "contributors": [
+    {
+      "name": "huzhengcai471-crypto",
+      "url": "https://github.com/huzhengcai471-crypto/dsh-startup-secret"
+    }
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TomCatV/dsh-startup-secret.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TomCatV/dsh-startup-secret/issues"
+  },
+  "homepage": "https://github.com/huzhengcai471-crypto/dsh-startup-secret#readme",
   "scripts": {
-    "test": "node test/smoke-host.mjs && node test/smoke-splash.mjs && node test/smoke-client.mjs && node test/smoke-desktop-boot.mjs && node test/new-options.mjs"
+    "test": "node test/smoke-host.mjs && node test/smoke-splash.mjs && node test/smoke-client.mjs && node test/smoke-desktop-boot.mjs && node test/new-options.mjs",
+    "test:all": "node test/run-all.mjs",
+    "test:all:full": "node test/run-all.mjs --all"
   }
 }

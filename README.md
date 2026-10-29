@@ -1,5 +1,20 @@
 # dsh-startup-secret
 
+> ## ⚠️ 这是转载 + 工程优化版，不是原作
+>
+> **原作者**：[@huzhengcai471-crypto](https://github.com/huzhengcai471-crypto)
+> **原作仓库**：<https://github.com/huzhengcai471-crypto/dsh-startup-secret>
+> **更上游**：`6shenhonghong9/dsh-startup-screen`（`package.json` 署名「沈宏宏」）
+> **本仓库基线**：上游 `main@c03017be`，`dsh-startup-secret@1.5.2`（2026-10-29）
+>
+> 视觉设计、动画分镜、文案、7 款真声音色、全部音视频素材 **均为原作者作品，逐字节未改**。
+> 本仓库只做工程层修复（换行符固化、PowerShell 安装器、旧插件共存检测、一键测试）。
+> 全部改动清单见 **[OPTIMIZATIONS.md](./OPTIMIZATIONS.md)**，完整署名见 **[CREDITS.md](./CREDITS.md)**。
+>
+> **二次开发定制 / 改文案 / 换立绘 / 企业内网适配 → QQ：2363984977**
+
+---
+
 DeepSeek Harness 的启动界面与启动动画插件（二次创作版）。
 
 暗色赛博风格开机动画：黑幕徽章标识 → 过曝洗白 → 暗色「技术档案」底板 →
@@ -13,7 +28,21 @@ DeepSeek Harness 的启动界面与启动动画插件（二次创作版）。
 
 ## 更新记录
 
-### v1.5.2
+### 转载版 v1.5.2-r1（本仓库）
+
+工程层修复，**不动设计不动素材**：
+
+| # | 改动 | 说明 |
+|---|---|---|
+| 1 | `.gitattributes` 补 `*.js/*.mjs/*.json/*.yml/*.md/*.css/*.html/*.ps1 text eol=lf` | Windows `core.autocrlf=true` 下 clone 会把 `lib/splash.js` 转成 CRLF（+1847 个 `\r`），导致 `new-options.mjs` 挂 1 项；钉死 LF 后 clone 即得与发布 tarball 逐字节一致的源码 |
+| 2 | 新增 `.editorconfig` | 编辑器层也钉 LF；`.cmd/.bat` 单独声明 GBK + CRLF |
+| 3 | 新增 `install.ps1` / `uninstall.ps1` | PowerShell 安装器；**含旧版 `dsh-startup-screen` 共存检测**（两者抢同一组 `/dsh-startup/*` 路由、同一份 `dsh-startup.json`、同一个 `settings.section` id，同时启用会重复注册） |
+| 4 | 新增 `test/run-all.mjs` | 一键跑全部测试并汇总断言数，替代 `a && b && c` 串联 |
+| 5 | 新增 `docs/LF-FAQ.md` | CRLF 问题排查与修复手册 |
+
+详见 [OPTIMIZATIONS.md](./OPTIMIZATIONS.md)。
+
+### v1.5.2（上游）
 
 - **「恢复默认语音档」按钮改为智性少女音**　原来恢复成「自动（优先神经网络女声）-US」，
   现改为出厂默认的智性少女音-CN；按钮旁小字说明同步更新。

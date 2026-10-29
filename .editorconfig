@@ -1,0 +1,31 @@
+# 与 .gitattributes 配套：把编辑器也钉到 LF
+# 2026-10-29 追加。见 OPTIMIZATIONS.md 第 2 条。
+
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Windows 批处理必须是 GBK + CRLF，编辑器不要"帮忙"改成 LF
+[*.{cmd,bat}]
+end_of_line = crlf
+charset = gbk
+insert_final_newline = false
+
+# Shell 脚本必须 LF，否则 shebang 变 "#!/bin/sh\r"
+[*.sh]
+end_of_line = lf
+indent_size = 2
+
+# Markdown 保留行尾双空格（换行语义），不裁剪
+[*.md]
+trim_trailing_whitespace = false
+
+[*.ps1]
+end_of_line = lf
+indent_size = 2
